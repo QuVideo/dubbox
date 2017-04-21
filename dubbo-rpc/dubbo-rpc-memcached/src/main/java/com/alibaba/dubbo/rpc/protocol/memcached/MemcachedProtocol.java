@@ -39,7 +39,7 @@ import com.alibaba.dubbo.rpc.protocol.AbstractProtocol;
 
 /**
  * MemcachedProtocol
- * 
+ *
  * @author william.liangf
  */
 public class MemcachedProtocol extends AbstractProtocol {
@@ -67,7 +67,7 @@ public class MemcachedProtocol extends AbstractProtocol {
             final String get = url.getParameter("get", "get");
             final String set = url.getParameter("set", Map.class.equals(type) ? "put" : "set");
             final String delete = url.getParameter("delete", Map.class.equals(type) ? "remove" : "delete");
-            return new AbstractInvoker<T>(type, url) {
+            Invoker invoker = new AbstractInvoker<T>(type, url) {
                 protected Result doInvoke(Invocation invocation) throws Throwable {
                     try {
                         if (get.equals(invocation.getMethodName())) {
@@ -109,6 +109,8 @@ public class MemcachedProtocol extends AbstractProtocol {
                     }
                 }
             };
+            invokers.add(invoker);
+            return invoker;
         } catch (Throwable t) {
             throw new RpcException("Failed to refer memecached service. interface: " + type.getName() + ", url: " + url + ", cause: " + t.getMessage(), t);
         }
