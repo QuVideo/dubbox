@@ -59,6 +59,10 @@ public class RestProtocol extends AbstractProxyProtocol {
 
     private static final int DEFAULT_PORT = 80;
 
+    private static final String HTTP_PROTOCOL = "protocol";
+
+    private static final String DEFAULT_HTTP_PROTOCOL = "http";
+
     private final Map<String, RestServer> servers = new ConcurrentHashMap<String, RestServer>();
 
     private final RestServerFactory serverFactory = new RestServerFactory();
@@ -182,8 +186,12 @@ public class RestProtocol extends AbstractProxyProtocol {
             }
         }
 
-        // TODO protocol
-        ResteasyWebTarget target = client.target("http://" + url.getHost() + ":" + url.getPort() + "/" + getContextPath(url));
+        ResteasyWebTarget target;
+        if(url.getPort() == 0){
+            target = client.target(url.getParameter(HTTP_PROTOCOL,DEFAULT_HTTP_PROTOCOL) + "://" + url.getHost() + "/" + getContextPath(url));
+        } else {
+            target = client.target(url.getParameter(HTTP_PROTOCOL,DEFAULT_HTTP_PROTOCOL) + "://" + url.getHost() + ":" + url.getPort() + "/" + getContextPath(url));
+        }
         return target.proxy(serviceType);
     }
 
